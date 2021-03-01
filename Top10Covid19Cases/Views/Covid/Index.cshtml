@@ -1,0 +1,103 @@
+﻿@model Region
+@{
+    ViewData["Title"] = "Index";
+
+    List<Report> ListReports = ViewBag.ListReports;
+}
+
+<div class="col-8">
+    <form id="form" asp-controller="Covid" asp-action="Index" method="post">
+        <div class="row">
+            <div class="col-7">
+                <div style="display:flex; justify-content:flex-start;">
+                    <select name="iso" asp-for="iso" class="form-control-sm" asp-items="ViewBag.ListRegions">
+                        <option value="regions"> REGIONS</option>
+                    </select>
+                    <input type="submit" class="form-control-sm btn-secondary" value="Report" />
+                </div>
+            </div>
+            <div class="btn-group col-5" role="group" aria-label="Basic outlined example">
+                <button type="button" id="xml" class="btn btn-outline-secondary form-control-sm">XML</button>
+                <button type="button" id="json" class="btn btn-outline-secondary form-control-sm">JSON</button>
+                <button type="button" id="csv" class="btn btn-outline-secondary form-control-sm">CSV</button>
+            </div>
+        </div>
+
+    </form>
+    @if (ViewBag.Regions)
+    {
+        <table id="table" class="table table-striped">
+            <thead>
+                <tr>
+                    <th>REGION</th>
+                    <th>CASES</th>
+                    <th>DEATHS</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (ListReports?.Count > 0)
+                {
+                    @foreach (Report item in ListReports)
+                    {
+                        <tr>
+                            <td>@item.region.name</td>
+                            <td>@item.confirmed</td>
+                            <td>@item.deaths</td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <table id="table" class="table table-striped">
+            <thead>
+                <tr>
+                    <th>PROVINCE</th>
+                    <th>CASES</th>
+                    <th>DEATHS</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (ListReports?.Count > 0)
+                {
+                    @foreach (Report item in ListReports)
+                    {
+                        <tr>
+                            <td>@item.region.province</td>
+                            <td>@item.confirmed</td>
+                            <td>@item.deaths</td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    }
+
+</div>
+
+
+
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+        integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+        crossorigin="anonymous"></script>
+
+<script>
+    $("#json").on("click", function () {
+        $("#table").tableHTMLExport({ type: 'json', filename: 'Covid19Report.json'});
+    });
+    $("#csv").on("click", function () {
+        $("#table").tableHTMLExport({ type: "csv", filename: "Covid19Report.csv" });
+    });
+    $("#xml").on("click", function () {
+        $('table').tableExport({
+            type: 'excel',
+            filename:"Covid19Report.xml",
+            mso: {
+                fileFormat: 'xmlss',
+                worksheetName: ['Table 1', 'Table 2', 'Table 3']
+            }
+        });
+    });
+</script>
